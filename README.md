@@ -1,6 +1,9 @@
 # Vue Pattern Validator
 A Vue3 validator library to easily validate fields & handle validators in a sophisticated manner
 
+![Build Status](https://github.com/shahidullahkhankhattak/vue-pattern-validator/actions/workflows/ci.yml/badge.svg?branch=main)
+![Tests Status](https://github.com/shahidullahkhankhattak/vue-pattern-validator/actions/workflows/ci.yml/badge.svg?branch=main&event=push)
+
 ## Overview
 
 Vue Pattern Validator is a versatile validation library for Vue 3 applications. It provides an easy way to validate form fields, supporting both single and multiple field validations. This library also supports integration with i18n for localized error messages.
