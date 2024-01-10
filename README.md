@@ -81,6 +81,57 @@ export default {
 };
 ```
 
+
+### Using `$v` for Validations in Vue Templates
+
+The Vue Pattern Validator library exposes a `$v` function that is globally available in Vue templates. This function is particularly useful for form validations, where you can integrate it into the `:pattern` attribute of input fields.
+
+#### Single Field Validation
+
+For single field validation, use `$v` with the name of your validation rule. It returns a validator function that can be used directly in the `:pattern` attribute of an input.
+
+```vue
+<template>
+  <input v-model="email" :pattern="$v('email')" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      email: '',
+    };
+  },
+};
+</script>
+```
+
+#### Multiple Field Validation
+
+For multiple field validations, you can pass multiple validation names to `$v`. It returns an array of validator functions, which can be used in the `:pattern` attribute.
+
+```vue
+<template>
+  <input v-model="password" :pattern="$v('minLength', 'containsNumber')" />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      password: '',
+    };
+  };
+</script>
+```
+
+### Notes
+
+- The `$v` function is accessible in all Vue templates without the need to import or pass it explicitly.
+- Ensure that the validators provided to `$v` are correctly defined in your custom validators setup.
+- `$v` is reactive and will re-evaluate its validators when the input value changes.
+- For more complex validations, consider using Vue's computed properties or methods.
+
 ### i18n Integration
 
 If your application uses Vue i18n, Vue Pattern Validator can utilize it to return localized error messages. Ensure i18n is set up in your Vue application before initializing the validator plugin.
