@@ -1,8 +1,7 @@
 # Vue Pattern Validator
-A Vue3 validator library to easily validate fields & handle validators in a sophisticated manner
-
 ![Build Status](https://github.com/shahidullahkhankhattak/vue-pattern-validator/actions/workflows/build.yml/badge.svg?branch=main)
 ![Tests Status](https://github.com/shahidullahkhankhattak/vue-pattern-validator/actions/workflows/test.yml/badge.svg?branch=main&event=push)
+A Vue3 validator library to easily validate fields & handle validators in a sophisticated manner
 
 ## Overview
 
