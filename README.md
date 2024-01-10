@@ -1,4 +1,5 @@
 # Vue Pattern Validator
+A Vue3 validator library to easily validate fields & handle validators in a sophisticated manner
 
 ## Overview
 

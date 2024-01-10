@@ -1,7 +1,7 @@
 {
   "name": "vue-pattern-validator",
   "version": "1.0.0",
-  "description": "pattern validator for vue to easily validate fields & handle validators in a sophisticated manner",
+  "description": "A vue3 validator library to easily validate fields & handle validators in a sophisticated manner",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
