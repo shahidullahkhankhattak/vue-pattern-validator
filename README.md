@@ -31,7 +31,7 @@ import { createVuePatternValidatorPlugin, Validators } from 'vue-pattern-validat
 
 // Define custom validators
 const customValidators: Validators = {
-  required: (val, t) => !val && (t ? t('field.required') : 'This field is required'),
+  required: (val, t) => (val && val.length > 0) || (t ? t('field.required') : 'This field is required'),
   // ... other validators
 };
 
@@ -42,7 +42,11 @@ app.mount('#app');
 
 ### Single Field Validation
 
-To validate a single field, use the `validate` function provided by the library. It returns an error message if validation fails, or `false` if validation passes.
+To validate a single field, use the `validate` function provided by the library. It returns an error message if validation fails, or `undefined` if validation passes.
+
+#### Params
+- **validation**: first parameter is the name of the validation - `string`
+- **value**: second parameter is the value of the field - `any`
 
 ```typescript
 import { inject } from 'vue';
@@ -52,7 +56,7 @@ export default {
   setup() {
     const validate = inject<ValidateFunction>('validate');
     const errorMessage: ValidationResult = validate('required', 'testValue');
-    // errorMessage will be 'This field is required' if testValue is empty, or false if not
+    // errorMessage will be 'This field is required' if testValue is empty, or undefined if validation passes
   }
 };
 ```
@@ -61,38 +65,56 @@ export default {
 
 To validate multiple fields at once, pass an array of tuples to the `validate` function. Each tuple should contain the validator name and the field value. The function returns an object with the validation results.
 
+#### Params
+- **validationsArray**: first parameter is the validations array `Array<MultipleValidationObj>`
+#### MultipleValidationObj structure
+- **fieldName**: name of the field - `string`
+- **validation**: name of the validation - `string`
+- **value**: value of the field - `any`
+
 ```typescript
 import { inject } from 'vue';
-import { ValidateFunction, ValidationResult } from 'vue-pattern-validator';
+import { ValidateFunction, MultipleValidationResult } from 'vue-pattern-validator';
 
 export default {
   setup() {
     const validate = inject<ValidateFunction>('validate');
-    const validationResults: ValidationResult = validate([
-      ['required', 'firstValue'],
-      ['email', 'secondValue']
-    ]);
-    // validationResults will be an object like:
-    // {
-    //   required: 'This field is required' or undefined,
-    //   email: 'Invalid email address' or undefined
-    // }
+    const validationResults: MultipleValidationResult = validate([{
+      fieldName: 'firstName',
+      validation: 'required',
+      value: 'john'
+    }, {
+      fieldName: 'lastName',
+      validation: 'required',
+      value: ''
+    }]);
+    /**
+     * validationResults will only contain fields for which validation did not pass, it will be an object like:
+     * { 
+     *   lastName: 'This field is required'
+     * }
+     * This object doesn't contain firstName because for that field the validation passed
+     */
   }
 };
 ```
 
 
-### Using `$v` for Validations in Vue Templates
+### Using `$ve` aka validation error for Validations in Vue Templates
 
-The Vue Pattern Validator library exposes a `$v` function that is globally available in Vue templates. This function is particularly useful for form validations, where you can integrate it into the `:pattern` attribute of input fields.
+The Vue Pattern Validator library exposes a `$ve` function that is globally available in Vue templates. This function is particularly useful for form validations, where you can get `error message` for a specific field value & validation, if the validation passes it will return `undefined` (so nothing will be rendered on the screen).
 
-#### Single Field Validation
-
-For single field validation, use `$v` with the name of your validation rule. It returns a validator function that can be used directly in the `:pattern` attribute of an input.
+#### Params
+- **validation**: first parameter is the name of the validation - `string`
+- **value**: second parameter is the value of the field - `any`
 
 ```vue
 <template>
-  <input v-model="email" :pattern="$v('email')" />
+  <div>
+    <div class="error-message">{{ $ve(email, 'required') }}</div>
+
+    <input v-model="email" />
+  </div>
 </template>
 
 <script>
@@ -106,30 +128,11 @@ export default {
 </script>
 ```
 
-#### Multiple Field Validation
-
-For multiple field validations, you can pass multiple validation names to `$v`. It returns an array of validator functions, which can be used in the `:pattern` attribute.
-
-```vue
-<template>
-  <input v-model="password" :pattern="$v('minLength', 'containsNumber')" />
-</template>
-
-<script>
-export default {
-  data() {
-    return {
-      password: '',
-    };
-  };
-</script>
-```
-
 ### Notes
 
-- The `$v` function is accessible in all Vue templates without the need to import or pass it explicitly.
-- Ensure that the validators provided to `$v` are correctly defined in your custom validators setup.
-- `$v` is reactive and will re-evaluate its validators when the input value changes.
+- The `$ve` function is accessible in all Vue templates without the need to import or pass it explicitly.
+- Ensure that the validators provided to `$ve` are correctly defined in your custom validators setup.
+- `$ve` is reactive and will re-evaluate its validators when the input value changes.
 - For more complex validations, consider using Vue's computed properties or methods.
 
 ### i18n Integration
@@ -138,7 +141,7 @@ If your application uses Vue i18n, Vue Pattern Validator can utilize it to retur
 
 ## Custom Validators
 
-You can create custom validators as per your application's requirements. Each validator is a function that takes the field value and an optional translation function `t`. It should return a string with an error message when validation fails, or `false` if validation passes.
+You can create custom validators as per your application's requirements. Each validator is a function that takes the field value and an optional translation function `t`. It should return a string with an error message when validation fails, or `true` if validation passes.
 
 ```typescript
 import { Validators } from 'vue-pattern-validator';
@@ -148,7 +151,7 @@ const customValidators: Validators = {
     if (val does not meet some condition) {
       return t ? t('custom.error.message') : 'Default error message';
     }
-    return false;
+    return true;
   }
 };
 ```
